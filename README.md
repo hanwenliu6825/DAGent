@@ -121,14 +121,14 @@ bash scripts/train_bc_qwen3_8b.sh dagent_dagrpo 123    # seeds used in the paper
 
 Training workflows (Table 1 of the paper, training-based rows; 21 update steps, seeds 42 / 123 / 777):
 
-| Workflow              | Paper row               | Method                                                                                          |
-|-----------------------|-------------------------|-------------------------------------------------------------------------------------------------|
-| `dagent_dagrpo`       | DAGRPO-DAGent           | DAGent + DAGRPO (α = 0.5 multiplicative off-chain credit + structural compliance regularization) |
-| `dagent_grpo`         | GRPO-DAGent             | DAGent + role-separated outcome-only GRPO (α = 1.0, regularization off)                         |
-| `search_branch_grpo`  | GRPO-Fold Agent         | Fold Agent + outcome-only GRPO                                                                  |
-| `search_grpo`         | GRPO-ReAct Agent (32K)  | ReAct Agent + outcome-only GRPO (default `RESPONSE_LENGTH=32768`)                               |
-| `search_grpo`         | GRPO-ReAct Agent (109K) | Same workflow; set `RESPONSE_LENGTH=109568` before launching                                    |
-| `search_summary_grpo` | GRPO-Summary Agent      | Summary Agent + outcome-only GRPO                                                               |
+| Workflow              | Paper row               | Method                                                                   |
+|-----------------------|-------------------------|--------------------------------------------------------------------------|
+| `dagent_dagrpo`       | DAGRPO-DAGent           | DAGent + DAGRPO (α = 0.5 off-chain credit, structural compliance regularization on) |
+| `dagent_grpo`         | GRPO-DAGent             | DAGent + GRPO (α = 1.0, regularization off)                              |
+| `search_branch_grpo`  | GRPO-Fold Agent         | Fold Agent + GRPO                                                        |
+| `search_grpo`         | GRPO-ReAct Agent (32K)  | ReAct Agent + GRPO (default `RESPONSE_LENGTH=32768`)                     |
+| `search_grpo`         | GRPO-ReAct Agent (109K) | Same workflow; set `RESPONSE_LENGTH=109568` before launching             |
+| `search_summary_grpo` | GRPO-Summary Agent      | Summary Agent + GRPO                                                     |
 
 ## 📊 Evaluation
 
