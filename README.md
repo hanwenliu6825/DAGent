@@ -4,8 +4,11 @@
 </h1>
 
 <p align="center">
+  <a href="https://arxiv.org/abs/2609.39154">
+    <img src="https://img.shields.io/badge/Paper-arXiv%3A2609.39154-b31b1b?style=for-the-badge&logo=arxiv&logoColor=white" alt="Paper (arXiv)">
+  </a>
   <a href="https://openreview.net/forum?id=gNnU6UhVDm">
-    <img src="https://img.shields.io/badge/Paper-NeurIPS%202026-1f4e79?style=for-the-badge" alt="Paper (NeurIPS 2026)">
+    <img src="https://img.shields.io/badge/NeurIPS%202026-Poster-1f4e79?style=for-the-badge" alt="NeurIPS 2026">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/License-Apache%202.0-2c7a39?style=for-the-badge" alt="License">
@@ -13,49 +16,38 @@
 </p>
 
 <p align="center">
-  <a href="#overview">Overview</a> •
-  <a href="#news">News</a> •
-  <a href="#release-status">Release Status</a> •
-  <a href="#installation">Installation</a> •
-  <a href="#repository-layout">Repository Layout</a> •
-  <a href="#training">Training</a> •
-  <a href="#evaluation">Evaluation</a> •
-  <a href="#citation">Citation</a> •
-  <a href="#acknowledgments">Acknowledgments</a> •
-  <a href="#license">License</a>
+  <a href="#-overview">Overview</a> •
+  <a href="#-news">News</a> •
+  <a href="#-installation">Installation</a> •
+  <a href="#-repository-layout">Repository Layout</a> •
+  <a href="#-training">Training</a> •
+  <a href="#-evaluation">Evaluation</a> •
+  <a href="#-citation">Citation</a> •
+  <a href="#-acknowledgments">Acknowledgments</a> •
+  <a href="#-license">License</a>
 </p>
 
 <p align="center">
   <img src="figs/figure2.png" alt="DAGent overview" width="100%">
 </p>
 
-## Overview
+## 📖 Overview
 
-Deep research tasks require an agent to search across many sources, combine the evidence, and revise its plan as findings come in. Existing DAG-based agents commit to a task-level plan before execution and repair it only after failures show up. This Plan-then-Patch strategy commits most strongly at the moment the agent knows least, and later repairs spend computation on branches that should never have been planned.
+Deep research tasks require an agent to search many sources, combine the evidence, and revise its plan as findings come in. Existing DAG-based agents commit to a full plan before execution and patch it after failures. This Plan-then-Patch strategy commits most when the agent knows least, and the patches spend computation on branches that should never have been planned.
 
-DAGent replaces this with **Evaluate-then-Grow** incremental planning. An Orchestrator grows the task DAG one batch at a time, conditioning every expansion on the confidence and uncertainty that completed nodes report. A hierarchical context layer propagates compact **QueryDocs** between nodes by default and exposes the full **InteractionTranscript** of a node through a `recall` tool only when a downstream node asks for it. Because the graph is append-only, the recorded topology also defines structural RL signals that outcome-only recipes cannot express; **DAGRPO** instantiates them as a topology-conditioned credit on Executor rollouts and a structural compliance regularization on Orchestrator plans.
+DAGent replaces this with **Evaluate-then-Grow** incremental planning: an Orchestrator grows the task DAG one batch at a time, conditioning each expansion on the confidence and uncertainty reported by completed nodes. A hierarchical context layer passes compact **QueryDocs** between nodes by default and exposes a node's full **InteractionTranscript** through a `recall` tool only on demand. The append-only graph also records a topology that defines structural RL signals; **DAGRPO** uses it for topology-conditioned credit on Executor rollouts and a structural compliance regularization on Orchestrator plans.
 
-Across BrowseComp-Plus, GAIA, and xbench-DeepSearch, DAGent surpasses the strongest open-source baseline by 5.3 / 5.8 / 2.0 points at the Qwen3-235B-A22B scale, the lead replicates across four open-source backbones from four vendors and extends to GPT-5 at 327K context, and DAGRPO adds 3.0 average points over a same-budget outcome-only GRPO baseline at the Qwen3-8B scale, at a lower per-task cost than the Plan-then-Patch counterpart.
+On BrowseComp-Plus, GAIA, and xbench-DeepSearch, DAGent beats the strongest open-source baseline by 5.3 / 5.8 / 2.0 points at the Qwen3-235B-A22B scale, holds the lead across four open-source backbones and GPT-5 at 327K context, and costs less per task than its Plan-then-Patch counterpart. DAGRPO adds 3.0 points on average over same-budget GRPO at the Qwen3-8B scale.
 
-## News
+## 🔥 News
 
-- **2026-09** DAGent is accepted at NeurIPS 2026 as a poster. The arXiv version of the paper is coming soon.
-- **2026-09** First code release: the DAGent workflow, its prompts and tool schemas, the DAGRPO advantage estimator, and the training and evaluation entry points.
+- **[2026-09]** 📄 The paper is on arXiv: [arXiv:2609.39154](https://arxiv.org/abs/2609.39154).
+- **[2026-09]** 🎉 DAGent is accepted at **NeurIPS 2026** as a poster.
+- **[2026-09]** 🧩 Initial code release: DAGent, DAGRPO, and the training and evaluation scripts. More code is coming soon. ⭐
 
-## Release Status
+## ⚙️ Installation
 
-This repository currently contains the DAGent-specific code. The remaining parts of the evaluation and training stack are being cleaned up and will be released soon:
-
-- the shared runtime (LLM clients, task context, action execution) and the search backends and LLM judges for BrowseComp-Plus, GAIA, and xbench-DeepSearch;
-- the baseline workflows used in the paper (ReAct / Summary agent, Fold Agent, Flash-Searcher) with their prompts, and the controlled-evaluation harness for the official FlowSearch implementation;
-- the verl fork with the agent loop and the training configurations;
-- the scripts that produce the figures of the paper.
-
-Until then, the commands below document the exact invocations used for the paper rather than a self-contained runnable package. Watch or star the repository to be notified.
-
-## Installation
-
-The paper used Python 3.12 with PyTorch 2.8.0 (CUDA 12.8), vLLM 0.11.0, and FlashAttention 2.8.3. Training additionally needs the verl fork from the upcoming release; `verl/trainer/ppo/core_algos.py` in this repository is the file that replaces its counterpart there.
+The paper used Python 3.12, PyTorch 2.8.0 (CUDA 12.8), vLLM 0.11.0, and FlashAttention 2.8.3. Training also needs our verl fork (coming soon); `verl/trainer/ppo/core_algos.py` replaces the same file there.
 
 ```bash
 conda create -n dagent python=3.12 -y
@@ -70,7 +62,7 @@ pip install transformers datasets accelerate safetensors \
 pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.8cxx11abiFALSE-cp312-cp312-linux_x86_64.whl
 ```
 
-## Repository Layout
+## 📁 Repository Layout
 
 ```text
 DAGent/
@@ -89,11 +81,11 @@ DAGent/
     └── train_bc_qwen3_8b.sh    # Training launcher for the five RL workflows of Table 1
 ```
 
-## Training
+## 🚀 Training
 
 **1. Start the search server**
 
-The search server follows the FoldAgent scaffolding and ships with the upcoming release. Start it on a separate machine; it downloads the corpus (`Tevatron/browsecomp-plus-corpus`) and the pre-computed embeddings (`miaolu3/browsecomp-plus`) and loads Qwen3-Embedding-8B on the available GPUs.
+Start the search server (coming soon; it follows the FoldAgent scaffolding) on a separate machine. It downloads the corpus (`Tevatron/browsecomp-plus-corpus`) and the pre-computed embeddings (`miaolu3/browsecomp-plus`) and loads Qwen3-Embedding-8B.
 
 ```bash
 cd envs && python search_server.py \
@@ -116,7 +108,7 @@ export JUDGE_API_KEY="your-openai-api-key"
 
 **2. Download the training data**
 
-Download and decompress the BrowseComp-Plus 680 / 150 train / test split from the [FoldAgent release](https://github.com/sunnweiwei/FoldAgent), and place the files at `data/bc_train.parquet` and `data/bc_test.parquet`.
+Download the BrowseComp-Plus 680 / 150 train / test split from the [FoldAgent release](https://github.com/sunnweiwei/FoldAgent) and place it at `data/bc_train.parquet` and `data/bc_test.parquet`.
 
 **3. Train on BrowseComp-Plus**
 
@@ -127,7 +119,7 @@ bash scripts/train_bc_qwen3_8b.sh dagent_dagrpo        # seed 42 (default)
 bash scripts/train_bc_qwen3_8b.sh dagent_dagrpo 123    # seeds used in the paper: 42 / 123 / 777
 ```
 
-Training workflows (Table 1 of the paper, training-based rows; 21 update steps, three independent seeds):
+Training workflows (Table 1 of the paper, training-based rows; 21 update steps, seeds 42 / 123 / 777):
 
 | Workflow              | Paper row               | Method                                                                                          |
 |-----------------------|-------------------------|-------------------------------------------------------------------------------------------------|
@@ -138,11 +130,11 @@ Training workflows (Table 1 of the paper, training-based rows; 21 update steps, 
 | `search_grpo`         | GRPO-ReAct Agent (109K) | Same workflow; set `RESPONSE_LENGTH=109568` before launching                                    |
 | `search_summary_grpo` | GRPO-Summary Agent      | Summary Agent + outcome-only GRPO                                                               |
 
-## Evaluation
+## 📊 Evaluation
 
 **1. Start the search server**
 
-Required for BrowseComp-Plus only; GAIA and xbench-DeepSearch use web tools. Use the command of the training section.
+Needed for BrowseComp-Plus only; GAIA and xbench-DeepSearch use web tools. Same command as in Training.
 
 **2. Set the credentials**
 
@@ -167,7 +159,7 @@ export JINA_API_KEYS="your-jina-api-key"
 | GAIA                   | https://github.com/MiroMindAI/MiroThinker#-benchmark-evaluation                 | 103-task text-only validation subset; web search (Serper + Jina)  |
 | xbench-DeepSearch 2505 | https://github.com/MiroMindAI/MiroThinker#-benchmark-evaluation                 | 100 Chinese tasks; web search (Serper + Jina)                     |
 
-Place the parquet files at `data/gaia.parquet` and `data/xbench.parquet`; the BrowseComp-Plus files are already at `data/bc_train.parquet` and `data/bc_test.parquet` from the training step.
+Place the parquet files at `data/gaia.parquet` and `data/xbench.parquet`; the BrowseComp-Plus files are at `data/bc_train.parquet` and `data/bc_test.parquet` from the training step.
 
 **4. Evaluate**
 
@@ -184,7 +176,7 @@ python scripts/eval.py \
   --output_dir results
 ```
 
-Switch the benchmark with `--benchmark {browsecomp, gaia, xbench}` and the backbone with `--model_name {qwen/qwen3-8b, qwen/qwen3-32b, qwen/qwen3-235b-a22b-2507}`.
+Other benchmarks: `--benchmark {browsecomp, gaia, xbench}`. Other backbones: `--model_name {qwen/qwen3-8b, qwen/qwen3-32b, qwen/qwen3-235b-a22b-2507}`.
 
 Workflows (Table 1 of the paper, training-free rows):
 
@@ -197,25 +189,28 @@ Workflows (Table 1 of the paper, training-free rows):
 | `search_branch`  | —                          | Fold Agent          |
 | `flash_searcher` | —                          | Flash-Searcher      |
 
-The baseline workflows and the FlowSearch harness are part of the upcoming release (see [Release Status](#release-status)).
+The baseline workflows are coming soon.
 
-## Citation
+## 📝 Citation
 
-If you find this repository useful, please cite the paper:
+If you find this repository useful, please cite our paper 💗:
 
 ```bibtex
-@inproceedings{liu2026dagent,
-  title     = {{DAGent}: Evaluate-then-Grow Planning for Deep Research Agents},
-  author    = {Liu, Hanwen and Sun, Yuanfu and Tan, Qiaoyu},
-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
-  year      = {2026}
+@misc{liu2026dagentevaluatethengrowplanningdeep,
+      title={DAGent: Evaluate-then-Grow Planning for Deep Research Agents},
+      author={Hanwen Liu and Yuanfu Sun and Qiaoyu Tan},
+      year={2026},
+      eprint={2609.39154},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2609.39154},
 }
 ```
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
-This implementation builds on [verl](https://github.com/volcengine/verl) and follows the search-server scaffolding of [FoldAgent](https://github.com/sunnweiwei/FoldAgent). Benchmark data comes from the upstream releases: BrowseComp-Plus (train and test) from [FoldAgent](https://github.com/sunnweiwei/FoldAgent), GAIA and xbench-DeepSearch from [MiroThinker](https://github.com/MiroMindAI/MiroThinker). We also thank the open-source community for the libraries this project builds upon.
+This implementation builds on [verl](https://github.com/volcengine/verl) and the search-server scaffolding of [FoldAgent](https://github.com/sunnweiwei/FoldAgent). Benchmark data comes from [FoldAgent](https://github.com/sunnweiwei/FoldAgent) (BrowseComp-Plus) and [MiroThinker](https://github.com/MiroMindAI/MiroThinker) (GAIA, xbench-DeepSearch). We also thank the open-source community for the libraries this project builds upon.
 
-## License
+## 📄 License
 
 This project is released under the Apache License 2.0. Please see [LICENSE](LICENSE).
